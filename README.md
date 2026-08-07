@@ -118,7 +118,7 @@ Invoke-RestMethod `
 
 ### 4. 打开公开 Demo
 
-直接打开 [`demo/index.html`](demo/index.html)，或用任意静态服务器托管 `demo/` 目录。该 Demo 使用预置回答，访客不需要安装 n8n、Ollama，也不会访问你的本机服务。
+在线地址：[`GitHub Pages Demo`](https://qiuhanwei99-sketch.github.io/ecommerce-customer-support-rag-n8n/)。如果部署尚未完成，也可以直接打开 [`demo/index.html`](demo/index.html)，或用任意静态服务器托管 `demo/` 目录。该 Demo 使用预置回答，访客不需要安装 n8n、Ollama，也不会访问你的本机服务。
 
 ## API 契约
 
@@ -176,7 +176,7 @@ npm run evaluate
 
 1. 只提交本仓库源码、合成数据、工作流导出、截图和文档。
 2. 不提交 `.env`、`data/index.json`、`.n8n/`、模型文件、执行日志和任何 n8n 凭据。
-3. 在 GitHub Pages 发布 `demo/` 目录，README 同时链接在线 Demo。
+3. 通过 `.github/workflows/pages.yml` 在 GitHub Pages 发布 `demo/` 目录，README 同时链接在线 Demo。
 4. 作品集描述建议强调：RAG 检索、来源引用、人工转接、隐私边界和可替换模型接口。
 5. 演示脚本见 [`docs/demo-script.md`](docs/demo-script.md)；已完成一版可直接放入作品集的 MP4，交付说明见 [`docs/video-delivery.md`](docs/video-delivery.md)。
 
