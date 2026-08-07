@@ -1,0 +1,42 @@
+[
+  {
+    "keywords": ["退货", "无理由"],
+    "answer": "签收商品后 7 天内可以申请无理由退货。商品应保持未使用、未损坏，并保留完整包装、配件和赠品。",
+    "intent": "return_policy",
+    "citations": [{"source":"return-policy.md","section":"退货条件","chunkId":"return-policy-02"}],
+    "handoffRequired": false,
+    "handoffReason": null
+  },
+  {
+    "keywords": ["包邮", "运费"],
+    "answer": "演示店铺满 99 元包邮，不满 99 元的订单以结算页显示的运费为准。",
+    "intent": "shipping_policy",
+    "citations": [{"source":"shipping-policy.md","section":"运费","chunkId":"shipping-policy-03"}],
+    "handoffRequired": false,
+    "handoffReason": null
+  },
+  {
+    "keywords": ["订单", "物流", "地址"],
+    "answer": "这个操作需要查询或修改真实订单信息，演示机器人无法直接处理。请转人工客服，并准备好订单号和问题描述。",
+    "intent": "order_service",
+    "citations": [{"source":"escalation-policy.md","section":"必须转人工的情况","chunkId":"escalation-policy-01"}],
+    "handoffRequired": true,
+    "handoffReason": "真实订单和地址操作需要人工处理。"
+  },
+  {
+    "keywords": ["人工", "客服"],
+    "answer": "好的，我会为你转接人工客服。请准备订单号和问题描述；不要发送支付密码、完整银行卡号或身份证号。",
+    "intent": "human_handoff",
+    "citations": [{"source":"escalation-policy.md","section":"转接信息","chunkId":"escalation-policy-02"}],
+    "handoffRequired": true,
+    "handoffReason": "用户明确要求人工客服。"
+  },
+  {
+    "keywords": [],
+    "answer": "当前演示知识库没有足够信息支持这个问题。为了避免误导你，建议转人工客服进一步确认。",
+    "intent": "unknown",
+    "citations": [],
+    "handoffRequired": true,
+    "handoffReason": "演示知识库未覆盖该问题。"
+  }
+]

@@ -1,0 +1,272 @@
+{
+  "name": "Customer Support - n8n + Local RAG",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "customer-support",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-customer-support",
+      "name": "Customer Support Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        0
+      ],
+      "webhookId": "customer-support-demo"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json.body ?? $json;\nconst message = typeof input.message === 'string' ? input.message.trim() : '';\nif (!message) throw new Error('message is required.');\nreturn [{ json: { sessionId: String(input.sessionId || 'anonymous-demo'), message, channel: String(input.channel || 'local') } }];"
+      },
+      "id": "validate-input",
+      "name": "Validate Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -800,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8787/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ query: $json.message, topK: 4 }) }}",
+        "options": {}
+      },
+      "id": "search-knowledge",
+      "name": "Search Knowledge",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -560,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.matched }}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      },
+      "id": "has-results",
+      "name": "Relevant Chunks Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const request = $('Validate Input').first().json;\nconst search = $json;\nconst context = (search.results || []).map((item) => `[${item.source} / ${item.section} / ${item.chunkId}]\\n${item.text}`).join('\\n\\n');\nconst system = '\\u4f60\\u662f\\u661f\\u6cb3\\u96c6\\u5e02\\u5ba2\\u670d\\u673a\\u5668\\u4eba\\u3002\\u53ea\\u80fd\\u4f9d\\u636e\\u63d0\\u4f9b\\u7684\\u77e5\\u8bc6\\u5e93\\u56de\\u7b54\\u3002\\u8d44\\u6599\\u4e0d\\u8db3\\u65f6\\u5fc5\\u987b\\u660e\\u786e\\u8bf4\\u660e\\uff0c\\u4e0d\\u5f97\\u731c\\u6d4b\\u8ba2\\u5355\\u3001\\u5e93\\u5b58\\u3001\\u7269\\u6d41\\u6216\\u9000\\u6b3e\\u7ed3\\u679c\\u3002\\u6d89\\u53ca\\u771f\\u5b9e\\u8ba2\\u5355\\u3001\\u5730\\u5740\\u3001\\u652f\\u4ed8\\u3001\\u4e89\\u8bae\\u9000\\u6b3e\\u3001\\u8d26\\u6237\\u5b89\\u5168\\u6216\\u7528\\u6237\\u8981\\u6c42\\u4eba\\u5de5\\u65f6\\u5fc5\\u987b\\u5efa\\u8bae\\u8f6c\\u4eba\\u5de5\\u3002\\u56de\\u7b54\\u4f7f\\u7528\\u7b80\\u6d01\\u4e2d\\u6587\\u3002';\nconst prompt = `\\u7528\\u6237\\u95ee\\u9898\\uff1a${request.message}\\n\\n\\u77e5\\u8bc6\\u5e93\\u8d44\\u6599\\uff1a\\n${context}\\n\\n\\u8bf7\\u7ed9\\u51fa\\u5ba2\\u670d\\u56de\\u7b54\\uff0c\\u5e76\\u5728\\u5fc5\\u8981\\u65f6\\u8bf4\\u660e\\u9700\\u8981\\u4eba\\u5de5\\u5904\\u7406\\u3002`;\nreturn [{ json: { ...request, search, system, prompt } }];"
+      },
+      "id": "build-grounded-prompt",
+      "name": "Build Grounded Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ($env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434') + '/api/chat' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ model: ($env.CHAT_MODEL || 'qwen3:4b'), stream: false, messages: [{ role: 'system', content: $json.system }, { role: 'user', content: $json.prompt }] }) }}",
+        "options": {}
+      },
+      "id": "call-ollama-chat",
+      "name": "Ollama Chat Model",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        160,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const promptData = $('Build Grounded Prompt').first().json;\nconst content = String($json.message?.content || $json.response || '').trim();\nconst lower = promptData.message.toLowerCase();\nconst handoff = /订单|地址|支付|退款争议|投诉|账户安全|密码|人工/.test(promptData.message);\nlet intent = 'general';\nif (/退货|换货/.test(promptData.message)) intent = 'return_policy';\nelse if (/退款/.test(promptData.message)) intent = 'refund_policy';\nelse if (/配送|发货|包邮|物流/.test(promptData.message)) intent = 'shipping_policy';\nelse if (/订单|地址/.test(promptData.message)) intent = 'order_service';\nelse if (/会员|积分/.test(promptData.message)) intent = 'membership';\nelse if (/商品|价格|功能|容量/.test(promptData.message)) intent = 'product_info';\nreturn [{ json: { sessionId: promptData.sessionId, channel: promptData.channel, answer: content || '本次模型没有返回可用答案，请转人工处理。', intent, citations: (promptData.search.results || []).map((item) => ({ source: item.source, section: item.section, chunkId: item.chunkId })), handoffRequired: handoff, handoffReason: handoff ? '该问题涉及订单、账户、支付或需要人工确认的操作。' : null, model: ($env.CHAT_MODEL || 'qwen3:4b'), retrievalThreshold: promptData.search.threshold } }];"
+      },
+      "id": "format-grounded-answer",
+      "name": "Format Answer + Citations",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const request = $('Validate Input').first().json;\nconst search = $('Search Knowledge').first().json;\nreturn [{ json: { sessionId: request.sessionId, channel: request.channel, answer: '当前知识库没有足够信息支持这个问题。为了避免误导你，建议转人工客服进一步确认。', intent: 'unknown', citations: [], handoffRequired: true, handoffReason: '未检索到达到阈值的知识库内容。', retrievalThreshold: search.threshold ?? null } }];"
+      },
+      "id": "unknown-handoff",
+      "name": "No Reliable Answer - Handoff",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Customer Support Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [
+          {
+            "node": "Search Knowledge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Knowledge": {
+      "main": [
+        [
+          {
+            "node": "Relevant Chunks Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Relevant Chunks Found?": {
+      "main": [
+        [
+          {
+            "node": "Build Grounded Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Reliable Answer - Handoff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Grounded Prompt": {
+      "main": [
+        [
+          {
+            "node": "Ollama Chat Model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "main": [
+        [
+          {
+            "node": "Format Answer + Citations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Answer + Citations": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Reliable Answer - Handoff": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "customer-support-rag-v1",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "tags": []
+}

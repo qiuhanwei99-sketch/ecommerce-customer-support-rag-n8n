@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>星河集市 · RAG 客服 Demo</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">PORTFOLIO DEMO · N8N + RAG</p>
+          <h1>星河集市客服助手</h1>
+          <p class="intro">一个用合成电商资料模拟的客服机器人。回答带有知识库来源；订单和敏感操作会转人工。</p>
+        </div>
+        <span class="status"><i></i> 离线演示模式</span>
+      </header>
+
+      <section class="chat-card" aria-label="客服对话">
+        <div id="messages" class="messages" aria-live="polite"></div>
+        <form id="chat-form" class="composer">
+          <label class="sr-only" for="question">输入问题</label>
+          <input id="question" autocomplete="off" placeholder="例如：退货需要满足什么条件？" />
+          <button type="submit">发送</button>
+        </form>
+        <div class="quick-actions" aria-label="示例问题">
+          <button type="button" data-question="退货需要满足什么条件？">退货条件</button>
+          <button type="button" data-question="满多少元可以包邮？">配送政策</button>
+          <button type="button" data-question="帮我查订单 10001 到哪里了？">订单查询</button>
+        </div>
+      </section>
+
+      <footer>
+        <span>真实工作流：本地 n8n + Ollama + RAG 服务</span>
+        <span>公开页面：fixture-backed，不连接本机服务</span>
+      </footer>
+    </main>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

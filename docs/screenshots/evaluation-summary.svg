@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5f3ff"/><stop offset="1" stop-color="#eef6ff"/></linearGradient></defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <text x="110" y="120" font-family="Microsoft YaHei, Arial" font-size="28" font-weight="700" fill="#5b4bdb" letter-spacing="3">PORTFOLIO EVALUATION</text>
+  <text x="110" y="205" font-family="Microsoft YaHei, Arial" font-size="66" font-weight="800" fill="#172033">RAG 客服机器人评测</text>
+  <text x="110" y="255" font-family="Microsoft YaHei, Arial" font-size="26" fill="#657089">合成电商知识库 · 本地 Ollama · n8n 工作流</text>
+  <rect x="110" y="330" width="430" height="300" rx="28" fill="#ffffff" stroke="#e3e7f2"/>
+  <text x="150" y="405" font-family="Arial" font-size="104" font-weight="800" fill="#36a269">20/20</text>
+  <text x="152" y="470" font-family="Microsoft YaHei, Arial" font-size="28" fill="#172033">评测通过</text>
+  <text x="152" y="530" font-family="Microsoft YaHei, Arial" font-size="21" fill="#657089">覆盖命中、未命中、转人工</text>
+  <text x="152" y="565" font-family="Microsoft YaHei, Arial" font-size="21" fill="#657089">和边界问题</text>
+  <rect x="595" y="330" width="430" height="300" rx="28" fill="#ffffff" stroke="#e3e7f2"/>
+  <text x="635" y="405" font-family="Arial" font-size="84" font-weight="800" fill="#5b4bdb">3</text>
+  <text x="635" y="470" font-family="Microsoft YaHei, Arial" font-size="28" fill="#172033">关键分流</text>
+  <text x="635" y="530" font-family="Microsoft YaHei, Arial" font-size="21" fill="#657089">知识库回答 / 未命中 / 人工转接</text>
+  <rect x="1080" y="330" width="410" height="300" rx="28" fill="#ffffff" stroke="#e3e7f2"/>
+  <text x="1120" y="405" font-family="Arial" font-size="74" font-weight="800" fill="#e09c3d">0</text>
+  <text x="1120" y="470" font-family="Microsoft YaHei, Arial" font-size="28" fill="#172033">真实数据</text>
+  <text x="1120" y="530" font-family="Microsoft YaHei, Arial" font-size="21" fill="#657089">仅使用虚构品牌、商品</text>
+  <text x="1120" y="565" font-family="Microsoft YaHei, Arial" font-size="21" fill="#657089">和模拟订单场景</text>
+  <text x="110" y="760" font-family="Microsoft YaHei, Arial" font-size="24" fill="#657089">验证命令：npm run evaluate · npm run validate</text>
+  <text x="110" y="815" font-family="Microsoft YaHei, Arial" font-size="20" fill="#8a93a8">作品集说明：评测分数来自本地检索与分流测试；生成模型回答仍需人工抽检。</text>
+</svg>

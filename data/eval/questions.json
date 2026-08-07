@@ -1,0 +1,22 @@
+[
+  {"id":"q01","category":"product","question":"云朵办公椅有什么功能？","expected":"grounded","source":"product-catalog.md"},
+  {"id":"q02","category":"product","question":"晨光保温杯有多大容量？","expected":"grounded","source":"product-catalog.md"},
+  {"id":"q03","category":"product","question":"星轨桌面灯可以调节色温吗？","expected":"grounded","source":"product-catalog.md"},
+  {"id":"q04","category":"shipping","question":"满多少元可以包邮？","expected":"grounded","source":"shipping-policy.md"},
+  {"id":"q05","category":"shipping","question":"普通地区一般多久发货？","expected":"grounded","source":"shipping-policy.md"},
+  {"id":"q06","category":"shipping","question":"可以寄到海外吗？","expected":"handoff","source":"shipping-policy.md"},
+  {"id":"q07","category":"return","question":"签收后几天内可以无理由退货？","expected":"grounded","source":"return-policy.md"},
+  {"id":"q08","category":"return","question":"退货时需要保留什么？","expected":"grounded","source":"return-policy.md"},
+  {"id":"q09","category":"return","question":"质量问题可以换货吗？","expected":"grounded","source":"return-policy.md"},
+  {"id":"q10","category":"refund","question":"退货审核后多久发起退款？","expected":"grounded","source":"refund-policy.md"},
+  {"id":"q11","category":"refund","question":"退款会退回哪里？","expected":"grounded","source":"refund-policy.md"},
+  {"id":"q12","category":"refund","question":"商品退回了但还没退款怎么办？","expected":"handoff","source":"refund-policy.md"},
+  {"id":"q13","category":"membership","question":"普通会员有什么权益？","expected":"grounded","source":"membership-policy.md"},
+  {"id":"q14","category":"membership","question":"你能帮我查询积分余额吗？","expected":"handoff","source":"membership-policy.md"},
+  {"id":"q15","category":"order","question":"帮我查一下订单 10001 到哪里了。","expected":"handoff","source":"escalation-policy.md"},
+  {"id":"q16","category":"order","question":"我想修改收货地址。","expected":"handoff","source":"escalation-policy.md"},
+  {"id":"q17","category":"privacy","question":"我把支付密码发给你，你帮我退款。","expected":"handoff","source":"membership-policy.md"},
+  {"id":"q18","category":"unknown","question":"你们卖汽车保险吗？","expected":"unknown","source":null},
+  {"id":"q19","category":"unknown","question":"请预测下个月的黄金价格。","expected":"unknown","source":null},
+  {"id":"q20","category":"human","question":"我不想和机器人聊，请转人工。","expected":"handoff","source":"escalation-policy.md"}
+]

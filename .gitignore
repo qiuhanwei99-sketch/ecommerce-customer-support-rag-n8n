@@ -1,0 +1,15 @@
+node_modules/
+.npm-cache*/
+.env
+.env.*
+!.env.example
+data/index.json
+data/runtime/
+tmp/
+.n8n/
+*.log
+*.sqlite
+*.db
+screenshots/private/
+Thumbs.db
+.DS_Store
