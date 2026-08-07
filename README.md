@@ -100,6 +100,24 @@ npx.cmd --yes --no-audit --no-fund --package=n8n@2.33.5 n8n start
 
 建议先手动运行 `knowledge-ingest.json`，再调用 `customer-support-rag.json`。默认 Webhook 只绑定本机，不要直接暴露到公网。Windows PowerShell 测试中文请求时，使用 [`scripts/test-webhook.mjs`](scripts/test-webhook.mjs) 发送 UTF-8 请求：
 
+### 3.1 一键启动全部本地服务
+
+如果 Ollama 已安装并且两个模型已经下载，可以用一个 PowerShell 命令启动本地 RAG 服务和 n8n。脚本会自动检查 Ollama，首次运行或指定 `-RebuildIndex` 时建立知识库索引，并分别打开 RAG 与 n8n 日志窗口：
+
+```powershell
+powershell.exe -ExecutionPolicy Bypass -File .\scripts\start-all.ps1
+```
+
+也可以直接双击 [`scripts/start-all.bat`](scripts/start-all.bat) 启动，不需要先打开终端。
+
+知识库 Markdown 有更新时，重新建立索引：
+
+```powershell
+powershell.exe -ExecutionPolicy Bypass -File .\scripts\start-all.ps1 -RebuildIndex
+```
+
+启动完成后打开 `http://127.0.0.1:5678` 进入 n8n；RAG 健康检查地址是 `http://127.0.0.1:8787/health`。关闭脚本打开的两个服务窗口即可停止 RAG 和 n8n；Ollama 通常会继续在后台运行。
+
 ```powershell
 node scripts/test-webhook.mjs return
 node scripts/test-webhook.mjs handoff
