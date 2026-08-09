@@ -8,6 +8,7 @@ const requiredFiles = [
   'AGENTS.md', 'CLAUDE.md', 'README.md', '.env.example', 'n8n/customer-support-rag.json',
   'n8n/knowledge-ingest.json', 'demo/index.html', 'demo/app.js', 'demo/fixtures/responses.json',
   'services/rag-service/core.mjs', 'services/rag-service/ingest.mjs', 'services/rag-service/server.mjs',
+  'services/chat-ui/server.mjs', 'local-chat/index.html', 'local-chat/app.js', 'local-chat/styles.css',
   'data/eval/questions.json'
 ];
 const secretPatterns = [

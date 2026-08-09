@@ -38,8 +38,10 @@ Ollama qwen3:4b
 data/knowledge/                 合成客服知识库
 data/eval/questions.json        20 条评测问题
 services/rag-service/           Node 内置模块实现的本地检索服务
+services/chat-ui/               本机聊天页面与 n8n 代理服务
 n8n/                            可导入的 n8n 工作流 JSON
 demo/                           GitHub Pages 静态演示页面
+local-chat/                     本机真实 RAG 聊天页面
 docs/                           架构、演示脚本、评测和运行手册
 tests/                          离线单元测试
 ```
@@ -102,7 +104,7 @@ npx.cmd --yes --no-audit --no-fund --package=n8n@2.33.5 n8n start
 
 ### 3.1 一键启动全部本地服务
 
-如果 Ollama 已安装并且两个模型已经下载，可以用一个 PowerShell 命令启动本地 RAG 服务和 n8n。脚本会自动检查 Ollama，首次运行或指定 `-RebuildIndex` 时建立知识库索引，并分别打开 RAG 与 n8n 日志窗口：
+如果 Ollama 已安装并且两个模型已经下载，可以用一个 PowerShell 命令启动本地 RAG 服务、n8n 和真实聊天页面。脚本会自动检查 Ollama，首次运行或指定 `-RebuildIndex` 时建立知识库索引，并打开服务日志窗口：
 
 ```powershell
 powershell.exe -ExecutionPolicy Bypass -File .\scripts\start-all.ps1
@@ -116,7 +118,9 @@ powershell.exe -ExecutionPolicy Bypass -File .\scripts\start-all.ps1
 powershell.exe -ExecutionPolicy Bypass -File .\scripts\start-all.ps1 -RebuildIndex
 ```
 
-启动完成后打开 `http://127.0.0.1:5678` 进入 n8n；RAG 健康检查地址是 `http://127.0.0.1:8787/health`。关闭脚本打开的两个服务窗口即可停止 RAG 和 n8n；Ollama 通常会继续在后台运行。
+启动完成后打开 `http://127.0.0.1:5678` 进入 n8n；RAG 健康检查地址是 `http://127.0.0.1:8787/health`。关闭脚本打开的服务窗口即可停止 RAG、n8n 和聊天页面；Ollama 通常会继续在后台运行。
+
+启动脚本还会自动打开本机真实聊天页面 `http://127.0.0.1:4173`。聊天页面通过本地代理调用 n8n Webhook，支持当前会话的多轮上下文；对话只保存在浏览器内存中，不会上传到公网。页面和代理只绑定 `127.0.0.1`，不要将其端口暴露到公网。
 
 ```powershell
 node scripts/test-webhook.mjs return
@@ -146,9 +150,15 @@ Invoke-RestMethod `
 {
   "sessionId": "demo-session-001",
   "message": "退货需要满足什么条件？",
-  "channel": "local"
+  "channel": "local",
+  "history": [
+    {"role":"user","content":"我想了解退货"},
+    {"role":"assistant","content":"可以告诉我你想了解退货条件还是申请方式。"}
+  ]
 }
 ```
+
+`history` 为可选字段，工作流只保留最近 8 条合法的用户和客服消息；当前问题仍单独用于 RAG 检索。
 
 响应示例：
 
@@ -194,7 +204,7 @@ npm run evaluate
 
 1. 只提交本仓库源码、合成数据、工作流导出、截图和文档。
 2. 不提交 `.env`、`data/index.json`、`.n8n/`、模型文件、执行日志和任何 n8n 凭据。
-3. 通过 `.github/workflows/pages.yml` 在 GitHub Pages 发布 `demo/` 目录，README 同时链接在线 Demo。
+3. 通过 `.github/workflows/pages.yml` 在 GitHub Pages 发布 `demo/` 目录，README 同时链接在线 Demo。公开页面继续使用预置回答，不连接本机 n8n；真实聊天请使用本地启动脚本打开的 `127.0.0.1:4173` 页面。
 4. 作品集描述建议强调：RAG 检索、来源引用、人工转接、隐私边界和可替换模型接口。
 5. 演示脚本见 [`docs/demo-script.md`](docs/demo-script.md)；已完成一版可直接放入作品集的 MP4，交付说明见 [`docs/video-delivery.md`](docs/video-delivery.md)。
 
@@ -204,6 +214,7 @@ npm run evaluate
 - 本地索引使用 JSON 文件，适合小型作品集数据，不适合生产级高并发。
 - 订单、物流、支付和退款没有真实系统连接，只演示安全的转人工分支。
 - 本地模型质量和速度取决于电脑硬件。
+- 本机真实聊天页面需要本地启动 n8n、RAG 服务和 Ollama；GitHub Pages 不会调用这些本地服务。
 - 公开 Demo 是 fixture-backed 模拟体验，不等同于公网生产客服。
 
 ## 免责声明

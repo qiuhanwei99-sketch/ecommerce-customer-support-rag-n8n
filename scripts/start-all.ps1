@@ -13,6 +13,7 @@ $chatModel = if ($env:CHAT_MODEL) { $env:CHAT_MODEL } else { 'qwen3:4b' }
 $embeddingModel = if ($env:EMBEDDING_MODEL) { $env:EMBEDDING_MODEL } else { 'qwen3-embedding:0.6b' }
 $ragPort = if ($env:RAG_PORT) { [int]$env:RAG_PORT } else { 8787 }
 $n8nPort = 5678
+$chatUiPort = if ($env:CHAT_UI_PORT) { [int]$env:CHAT_UI_PORT } else { 4173 }
 
 function Stop-WithMessage([string]$message) {
     Write-Host "[ERROR] $message" -ForegroundColor Red
@@ -55,6 +56,7 @@ $env:OLLAMA_BASE_URL = $ollamaBaseUrl
 $env:CHAT_MODEL = $chatModel
 $env:EMBEDDING_MODEL = $embeddingModel
 $env:RAG_PORT = [string]$ragPort
+$env:CHAT_UI_PORT = [string]$chatUiPort
 $env:N8N_BLOCK_ENV_ACCESS_IN_NODE = 'false'
 
 $ollamaHealthy = $false
@@ -141,8 +143,27 @@ if (Test-ListeningPort $n8nPort) {
     }
 }
 
+if (Test-ListeningPort $chatUiPort) {
+    Write-Host "Local chat UI already listens on http://127.0.0.1:$chatUiPort" -ForegroundColor Yellow
+} else {
+    $chatUiProcess = Start-Process -FilePath $node `
+        -ArgumentList @('services/chat-ui/server.mjs') `
+        -WorkingDirectory $projectRoot `
+        -WindowStyle Normal `
+        -PassThru
+    if (-not (Wait-ForPort $chatUiPort 20)) {
+        if ($chatUiProcess.HasExited) {
+            Stop-WithMessage "Local chat UI exited immediately (process $($chatUiProcess.Id))."
+        }
+        Stop-WithMessage "Local chat UI did not open port $chatUiPort within 20 seconds."
+    }
+    Write-Host "Local chat UI started (process $($chatUiProcess.Id))." -ForegroundColor Green
+}
+
 Write-Host ''
 Write-Host 'Local stack is ready.' -ForegroundColor Green
 Write-Host "n8n editor: http://127.0.0.1:$n8nPort"
 Write-Host "RAG health:  http://127.0.0.1:$ragPort/health"
-Write-Host 'Use the two opened service windows to view logs. Close those windows to stop RAG and n8n.'
+Write-Host "Chat UI:     http://127.0.0.1:$chatUiPort"
+Start-Process "http://127.0.0.1:$chatUiPort" | Out-Null
+Write-Host 'Use the opened service windows to view logs. Close those windows to stop RAG, n8n and the chat UI.'

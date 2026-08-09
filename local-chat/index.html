@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>星河集市 · 本机真实 RAG 客服</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">LOCAL RUNTIME · N8N + RAG + OLLAMA</p>
+          <h1>星河集市客服助手</h1>
+          <p class="intro">本页面真实连接本机 n8n、RAG 检索服务和 Ollama。对话只保存在当前浏览器会话中。</p>
+        </div>
+        <span class="status"><i></i> 本机真实模式</span>
+      </header>
+
+      <section class="chat-card" aria-label="本机真实客服对话">
+        <div class="toolbar">
+          <span id="connection-status">正在检查本地服务…</span>
+          <button id="new-session" type="button" class="secondary">新会话</button>
+        </div>
+        <div id="messages" class="messages" aria-live="polite"></div>
+        <form id="chat-form" class="composer">
+          <label class="sr-only" for="question">输入问题</label>
+          <input id="question" autocomplete="off" placeholder="例如：退货需要满足什么条件？" />
+          <button id="send" type="submit">发送</button>
+        </form>
+        <div class="quick-actions" aria-label="示例问题">
+          <button type="button" data-question="退货需要满足什么条件？">退货条件</button>
+          <button type="button" data-question="满多少元可以包邮？">配送政策</button>
+          <button type="button" data-question="帮我查订单 10001 到哪里了？">订单查询</button>
+        </div>
+      </section>
+
+      <footer>
+        <span>真实链路：浏览器 → 本机代理 → n8n → RAG → Ollama</span>
+        <span>仅绑定 127.0.0.1，不对公网开放</span>
+      </footer>
+    </main>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

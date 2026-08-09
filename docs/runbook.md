@@ -83,3 +83,15 @@ Invoke-RestMethod `
 ## 5. Static demo
 
 Open `demo/index.html` directly or serve the project with any static server. It is fixture-backed and does not require n8n, Ollama, or network access.
+
+## 6. Local browser chat
+
+For the real local path, start the complete stack from the project root:
+
+```powershell
+powershell.exe -ExecutionPolicy Bypass -File .\scripts\start-all.ps1
+```
+
+The script starts the RAG service, n8n, and the local browser proxy, then opens `http://127.0.0.1:4173`. The page sends chat requests to `/api/chat`; the proxy forwards them to the local n8n webhook and avoids browser cross-origin issues.
+
+The page keeps the latest eight user/assistant messages in browser memory and sends them as the optional `history` field. Click **新会话** to clear the context. If the page reports a connection failure, check that the n8n, RAG, and chat UI windows are still running. The local UI binds only to `127.0.0.1` and should not be exposed to the public internet.

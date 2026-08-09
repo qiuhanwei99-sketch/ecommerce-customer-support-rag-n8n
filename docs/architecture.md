@@ -2,7 +2,9 @@
 
 ```mermaid
 flowchart LR
-  U[Customer or demo page] --> W[n8n Webhook]
+  U[Public fixture demo] --> D[Prebuilt responses]
+  L[Local browser chat] --> Pxy[Local Node proxy :4173]
+  Pxy --> W[n8n Webhook]
   W --> V[Validate input]
   V --> S[Local RAG service /search]
   S --> I{Relevant chunks found?}
@@ -24,6 +26,7 @@ flowchart LR
 - `services/rag-service` owns Markdown parsing, chunking, embeddings, cosine retrieval, and source metadata.
 - Ollama owns local generation and embedding inference.
 - `demo/` is a safe, offline portfolio surface backed by fixtures rather than a live webhook.
+- `local-chat/` and `services/chat-ui/` provide the real local browser path; the proxy is loopback-only and forwards requests to n8n.
 
 ## Trust boundaries
 
