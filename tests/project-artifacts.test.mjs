@@ -20,10 +20,23 @@ test('n8n exports contain expected workflow nodes and no credentials', async () 
   assert.ok(names.includes('Ollama Chat Model'));
   assert.ok(names.includes('Respond to Webhook'));
   assert.equal(customer.nodes.some((node) => Object.hasOwn(node, 'credentials')), false);
+  const validate = customer.nodes.find((node) => node.name === 'Validate Input');
+  const ollama = customer.nodes.find((node) => node.name === 'Ollama Chat Model');
+  assert.match(validate.parameters.jsCode, /slice\(-8\)/);
+  assert.match(validate.parameters.jsCode, /history contains an invalid message/);
+  assert.match(ollama.parameters.body, /\$json\.history/);
 });
 
 test('public demo is fixture-backed and does not reference localhost', async () => {
   const app = await fs.readFile(path.join(root, 'demo/app.js'), 'utf8');
   assert.match(app, /fixtures\/responses\.json/);
   assert.doesNotMatch(app, /127\.0\.0\.1|localhost/);
+});
+
+test('local chat UI is separate from the public fixture demo', async () => {
+  const localPage = await fs.readFile(path.join(root, 'local-chat/index.html'), 'utf8');
+  const server = await fs.readFile(path.join(root, 'services/chat-ui/server.mjs'), 'utf8');
+  assert.match(localPage, /本机真实模式/);
+  assert.match(server, /127\.0\.0\.1/);
+  assert.match(server, /\/api\/chat/);
 });
